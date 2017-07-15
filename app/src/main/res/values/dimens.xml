@@ -1,0 +1,21 @@
+<resources>
+    <!-- Margin around the floating action button in ProductActivity -->
+    <dimen name="fab_margin">16dp</dimen>
+
+    <!-- Common margin value used throughout the app -->
+    <dimen name="activity_margin">16dp</dimen>
+
+    <!-- Minus/plus button width and height -->
+    <dimen name="minus_plus_size">45dp</dimen>
+
+    <!--Empty image placeholder height-->
+    <dimen name="placeholder_height">120dp</dimen>
+
+    <!--Other dimensions-->
+    <dimen name="padding_margin_16">16dp</dimen>
+    <dimen name="padding_margin_8">8dp</dimen>
+    <dimen name="elevation">10dp</dimen>
+    <dimen name="padding_margin_4">4dp</dimen>
+
+</resources>
+
