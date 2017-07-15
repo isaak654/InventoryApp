@@ -89,9 +89,19 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private ImageView imageView;
 
     /**
-     * Uri variable declaration
+     * Uri variable that contains content URI for the ImageView field
      */
     private Uri mUri;
+
+    /**
+     * Uri variable that contains content URI for the new product
+     */
+    private Uri newUri;
+
+    /**
+     * Uri variable that contains content URI for an updated product
+     */
+    private int rowsAffected;
 
     /* State Uri variable declaration   */
     private static final String STATE_URI = "STATE_URI";
@@ -285,7 +295,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (mCurrentProductUri == null) {
             // This is a NEW product, so insert a new product into the provider,
             // returning the content URI for the new product.
-            Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
+            newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
 
             // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
@@ -302,17 +312,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // and pass in the new ContentValues. Pass in null for the selection and selection args
             // because mCurrentProductUri will already identify the correct row in the database that
             // we want to modify.
-            int rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
+            rowsAffected = getContentResolver().update(mCurrentProductUri, values, null, null);
 
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_product_failed),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.editor_update_product_failed), Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_product_successful),
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.editor_update_product_successful), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -363,8 +371,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             case R.id.action_save:
                 // Save product to database
                 saveProduct();
-                // Exit activity
-                finish();
+                // Call finish only if the user has successfully added a new product
+                if ((mCurrentProductUri == null) && (newUri != null)) {
+                    // Exit activity
+                    finish();
+                }
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -389,7 +400,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 DialogInterface.OnClickListener discardButtonClickListener =
                         new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                            public void onClick(DialogInterface dialogInterface, int which) {
                                 // User clicked "Discard" button, navigate to parent activity.
                                 NavUtils.navigateUpFromSameTask(EditorActivity.this);
                             }
@@ -444,7 +455,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         DialogInterface.OnClickListener discardButtonClickListener =
                 new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    public void onClick(DialogInterface dialogInterface, int which) {
                         // User clicked "Discard" button, close the current activity.
                         finish();
                     }
@@ -737,15 +748,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
-        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the product.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
+        builder.setNegativeButton(R.string.keep_editing, null);
 
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
@@ -758,20 +761,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+            public void onClick(DialogInterface dialog, int which) {
                 // User clicked the "Delete" button, so delete the product.
                 deleteProduct();
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the product.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
+        builder.setNegativeButton(R.string.cancel, null);
 
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
