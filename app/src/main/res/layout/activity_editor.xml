@@ -33,9 +33,9 @@
                 <!-- Name field -->
                 <EditText
                     android:id="@+id/edit_name"
-                    style="@style/EditorFieldStyle"
+                    style="@style/NameFieldStyle"
                     android:hint="@string/hint_product_name"
-                    android:inputType="textCapWords" />
+                    android:inputType="textCapWords"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -101,16 +101,14 @@
                 <!-- Price field -->
                 <EditText
                     android:id="@+id/edit_price"
-                    style="@style/EditorFieldStyle"
-                    android:maxLength="3"
-
+                    style="@style/PriceFieldStyle"
                     android:hint="@string/hint_product_price"
                     android:inputType="number" />
 
                 <!-- Price unit (dollars) -->
                 <TextView
                     android:id="@+id/label_price_unit"
-                    style="@style/EditorUnitsStyle"
+                    style="@style/UnitsStyle"
                     android:text="@string/unit_product_price" />
             </RelativeLayout>
         </LinearLayout>
@@ -136,37 +134,37 @@
                 <!-- Name field -->
                 <EditText
                     android:id="@+id/edit_supplier_name"
-                    style="@style/EditorFieldStyle"
+                    style="@style/NameFieldStyle"
                     android:hint="@string/hint_supplier_name"
-                    android:inputType="textCapWords" />
+                    android:inputType="textCapWords"/>
             </LinearLayout>
         </LinearLayout>
 
-            <!-- Supplier email category -->
+        <!-- Supplier email category -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!-- Label -->
+            <TextView
+                style="@style/CategoryStyle"
+                android:text="@string/category_supplier_email" />
+
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_weight="2"
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/padding_margin_4">
 
-                <!-- Label -->
-                <TextView
-                    style="@style/CategoryStyle"
-                    android:text="@string/category_supplier_email" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:orientation="vertical"
-                    android:paddingLeft="@dimen/padding_margin_4">
-
-                    <!-- Name field -->
-                    <EditText
-                        android:id="@+id/edit_supplier_email"
-                        style="@style/EditorFieldStyle"
-                        android:hint="@string/hint_supplier_email"
-                        android:inputType="textEmailAddress" />
-                </LinearLayout>
+                <!-- Name field -->
+                <EditText
+                    android:id="@+id/edit_supplier_email"
+                    style="@style/EmailFieldStyle"
+                    android:hint="@string/hint_supplier_email"
+                    android:inputType="textEmailAddress" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Product image category -->

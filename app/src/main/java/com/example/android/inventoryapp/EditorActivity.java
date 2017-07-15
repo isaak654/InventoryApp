@@ -39,6 +39,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -222,12 +224,28 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         // Check if this is supposed to be a new product
         // and check if one of the fields in the editor is blank
-        if (mCurrentProductUri == null &&
-                TextUtils.isEmpty(nameString) || TextUtils.isEmpty(quantityString) ||
-                TextUtils.isEmpty(priceString) || TextUtils.isEmpty(supplierNameString) ||
-                TextUtils.isEmpty(supplierEmailString)) {
-            // Since no fields were modified, we can return early without creating a new product.
-            // No need to create ContentValues and no need to do any ContentProvider operations.
+        if ((mCurrentProductUri == null) && TextUtils.isEmpty(nameString)) {
+            Toast.makeText(this, R.string.missing_name, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if ((mCurrentProductUri == null) && TextUtils.isEmpty(quantityString)) {
+            Toast.makeText(this, R.string.missing_quantity, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if ((mCurrentProductUri == null) && TextUtils.isEmpty(priceString)) {
+            Toast.makeText(this, R.string.missing_price, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if ((mCurrentProductUri == null) && TextUtils.isEmpty(supplierNameString)) {
+            Toast.makeText(this, R.string.missing_supplier_name, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if ((mCurrentProductUri == null) && TextUtils.isEmpty(supplierEmailString)) {
+            Toast.makeText(this, R.string.missing_supplier_email, Toast.LENGTH_LONG).show();
+            return;
+        }
+        if ((mCurrentProductUri == null) && (mUri == null)) {
+            Toast.makeText(this, R.string.missing_image, Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -249,8 +267,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             price = Integer.parseInt(priceString);
         }
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, price);
-        // Pass supplier values
+        // Pass supplier name value
         values.put(ProductEntry.COLUMN_SUPPLIER_NAME, supplierNameString);
+        // Check email validation before passing supplier email
+        if (!emailValidator(supplierEmailString)) {
+            Toast.makeText(this, R.string.invalid_email, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Pass supplier email value
         values.put(ProductEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString);
         // Check if there is an image and pass it
         if (mUri != null) {
@@ -291,6 +315,20 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    /**
+     * Validate your email address format. Ex-akhi@mani.com
+     * This regex example uses all the characters permitted by RFC 5322,
+     * which governs the email message format
+     */
+    private boolean emailValidator(String supplierEmailString) {
+        Pattern pattern;
+        Matcher matcher;
+        final String EMAIL_PATTERN = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$";
+        pattern = Pattern.compile(EMAIL_PATTERN);
+        matcher = pattern.matcher(supplierEmailString);
+        return matcher.matches();
     }
 
 
@@ -380,7 +418,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         intent.setData(Uri.parse("mailto:")); // only email apps should handle this
         intent.putExtra(Intent.EXTRA_SUBJECT, "Need extra products");
         intent.putExtra(Intent.EXTRA_EMAIL, new String[]{supplierEmail});
-        intent.putExtra(Intent.EXTRA_TEXT, "Dear " + supplierName + ", please send me " + standardSupply + " "  + productName
+        intent.putExtra(Intent.EXTRA_TEXT, "Dear " + supplierName + ", please send me " + standardSupply + " " + productName
                 + ".\n\n" + "Currently I have " + quantityString + " products left.");
         Intent mail = Intent.createChooser(intent, null);
         // Verify that the intent will resolve to an activity
@@ -627,7 +665,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_SUPPLIER_NAME,
                 ProductEntry.COLUMN_SUPPLIER_EMAIL,
-                ProductEntry.COLUMN_PRODUCT_IMAGE };
+                ProductEntry.COLUMN_PRODUCT_IMAGE};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
